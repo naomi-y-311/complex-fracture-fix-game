@@ -408,7 +408,7 @@ function updateProgress() {
             isCompleted = true;
             
             // 1. テキスト変更
-            statusDiv.textContent = "手術大成功！🎉 リハビリ頑張ってください！";
+            statusDiv.textContent = "手術大成功！🎉 リハビリ頑張って！";
             
             // 2. テキストをボヨヨンと大きくする
             statusDiv.style.transform = "scale(1.3)";
