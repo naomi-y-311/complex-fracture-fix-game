@@ -273,15 +273,23 @@ const canvas = document.getElementById('gameCanvas');
     }
 
 /* drawPiecePath から返ってきたデータを使って、実際に色を塗る処理に変更 */
-function draw() {
+    function draw() {
         if (!pieces || pieces.length === 0) return;
 
         ctx.clearRect(0, 0, baseWidth, baseHeight);
 
-        // 1. ガイドライン
+        // ★追加: 骨がすべて完了しているかチェック
+        const allBonesLocked = pieces
+            .filter(p => p.type === 'bone')
+            .every(p => p.isLocked);
+
+        // 1. ガイドライン（点線）
         ctx.save();
         ctx.setLineDash([4, 4]);
         pieces.forEach(p => {
+            // ★追加: プレートは、骨が終わるまで表示しない
+            if (p.type === 'plate' && !allBonesLocked) return;
+
             if (!p.isLocked) {
                 ctx.save();
                 ctx.translate(p.targetX, p.targetY);
@@ -301,7 +309,7 @@ function draw() {
         });
         ctx.restore();
 
-        // 2. ピース描画
+        // 2. ピース描画（実体）
         const sortedPieces = [...pieces].sort((a, b) => {
             if (a.isLocked !== b.isLocked) return a.isLocked ? -1 : 1;
             return a.zIndex - b.zIndex;
@@ -316,6 +324,9 @@ function draw() {
         }
 
         sortedPieces.forEach(p => {
+            // ★追加: プレートは、骨が終わるまで表示しない
+            if (p.type === 'plate' && !allBonesLocked) return;
+
             ctx.save();
             ctx.translate(p.x, p.y);
 
@@ -325,25 +336,21 @@ function draw() {
                 ctx.shadowOffsetY = 5;
             }
 
-            const path2d = drawPiecePath(ctx, p); // パスを取得
+            const path2d = drawPiecePath(ctx, p);
 
-            // ▼▼▼ ここからが修正箇所です ▼▼▼
             if (p.type === 'plate') {
                 ctx.fillStyle = p.isLocked ? "#b0bec5" : p.color;
-                ctx.strokeStyle = p.strokeColor || "#78909c"; // strokeColorがない場合のフォールバック
+                ctx.strokeStyle = p.strokeColor || "#78909c";
                 ctx.lineWidth = 1;
 
                 if (path2d) {
-                    // SVGデータのプレートの場合
-                    ctx.fill(path2d, "evenodd"); // 穴あきに対応するために "evenodd" を指定
+                    ctx.fill(path2d, "evenodd");
                     ctx.stroke(path2d);
                 } else {
-                    // 古いデータのプレートの場合
                     ctx.fill("evenodd");
                     ctx.stroke();
                 }
             } else {
-                // 骨の場合
                 ctx.fillStyle = p.isLocked ? "#ffe0b2" : p.color;
                 ctx.strokeStyle = "#5d4037";
                 ctx.lineWidth = 1;
@@ -356,8 +363,6 @@ function draw() {
                     ctx.stroke();
                 }
             }
-            // ▲▲▲ ここまでが修正箇所です ▲▲▲
-
             ctx.restore();
         });
 
@@ -452,12 +457,25 @@ function draw() {
 
     function handleStart(e) {
         if (isCompleted) return;
-        // ★追加: 指が2本以上ある場合（ズーム操作中など）は骨を掴まない
         if (e.touches && e.touches.length > 1) return;
         e.preventDefault();
         const pos = getPos(e);
 
-        const candidates = pieces.filter(p => !p.isLocked);
+        // ★追加: 骨がすべて完了しているかチェック
+        const allBonesLocked = pieces
+            .filter(p => p.type === 'bone')
+            .every(p => p.isLocked);
+
+        // タッチ候補の選定
+        const candidates = pieces.filter(p => {
+            // 既にロックされているものは除外
+            if (p.isLocked) return false;
+            // ★追加: 骨が終わっていない場合、プレートは触れないように除外
+            if (p.type === 'plate' && !allBonesLocked) return false;
+            
+            return true;
+        });
+
         for (let i = candidates.length - 1; i >= 0; i--) {
             if (isInside(pos, candidates[i])) {
                 selectedPiece = candidates[i];
