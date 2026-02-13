@@ -239,10 +239,31 @@ const canvas = document.getElementById('gameCanvas');
     }
 
     // --- 描画ロジック ---
-    function drawPiecePath(c, p) {
+function drawPiecePath(c, p) {
+        // ★修正点: まず「SVGデータ(pathData)」を持っているかを最優先でチェックする
+        if (p.pathData) {
+            // SVGデータがある場合（新しい骨やプレート）
+            if (!p.cachedPath) {
+                p.cachedPath = new Path2D(p.pathData);
+            }
+            
+            // もしプレートで、かつ「ネジ(screws)」のデータも持っているなら描画する
+            // (SVGに穴が開いているデザインなら、このif文は無視されます)
+            if (p.type === 'plate' && p.screws) {
+                 // 注意: Path2Dを使う場合、この関数内で直接描画すると順序が難しいですが、
+                 // 今回追加されたプレートにはscrewsがないので影響ありません。
+            }
+            
+            return p.cachedPath; // Path2Dオブジェクトを返す
+        } 
+        
+        // --- 以下、古いデータ形式（座標配列 path）の場合 ---
+
         if (p.type === 'plate') {
+            // 古いタイプのプレート（path配列がある場合）
             c.beginPath();
-            if (p.path.length >= 2) {
+            // ★安全策: pathが存在するか確認してから length を読む
+            if (p.path && p.path.length >= 2) {
                 c.moveTo(p.path[0], p.path[1]);
                 for(let i=2; i<p.path.length; i+=2) c.lineTo(p.path[i], p.path[i+1]);
             }
@@ -251,17 +272,12 @@ const canvas = document.getElementById('gameCanvas');
             if (p.screws) {
                 p.screws.forEach(s => drawCircle(c, s.x, s.y, s.r));
             }
-            return null; // Path2Dオブジェクトではない
-        } else if (p.pathData) {
-            // ★追加: SVGデータ(pathData)がある場合の処理
-            // 毎回生成すると重いので、初回だけ生成してキャッシュする
-            if (!p.cachedPath) {
-                p.cachedPath = new Path2D(p.pathData);
-            }
-            return p.cachedPath; // Path2Dオブジェクトを返す
+            return null;
         } else {
-            // 従来の座標配列(path)の場合
-            buildPath(c, p.path);
+            // 古いタイプの骨
+            if (p.path) {
+                buildPath(c, p.path);
+            }
             return null;
         }
     }
