@@ -265,7 +265,7 @@ const canvas = document.getElementById('gameCanvas');
                 const path2d = drawPiecePath(ctx, p); // パスを取得
                 
                 ctx.strokeStyle = "#bdbdbd";
-                ctx.lineWidth = 2;
+                ctx.lineWidth = 1;
                 
                 // ★修正: Path2Dならそれを描画、違えば現在のパスを描画
                 if (path2d) {
@@ -307,14 +307,14 @@ const canvas = document.getElementById('gameCanvas');
             if (p.type === 'plate') {
                 ctx.fillStyle = p.isLocked ? "#b0bec5" : p.color;
                 ctx.strokeStyle = p.strokeColor;
-                ctx.lineWidth = 2;
+                ctx.lineWidth = 1;
                 // プレートは従来通り
                 ctx.fill("evenodd");
                 ctx.stroke();
             } else {
                 ctx.fillStyle = p.isLocked ? "#ffe0b2" : p.color;
                 ctx.strokeStyle = "#5d4037";
-                ctx.lineWidth = 2;
+                ctx.lineWidth = 1;
 
                 // ★修正: Path2Dと従来方式で塗り方を分ける
                 if (path2d) {
@@ -419,6 +419,8 @@ const canvas = document.getElementById('gameCanvas');
 
     function handleStart(e) {
         if (isCompleted) return;
+        // ★追加: 指が2本以上ある場合（ズーム操作中など）は骨を掴まない
+        if (e.touches && e.touches.length > 1) return;
         e.preventDefault();
         const pos = getPos(e);
 
@@ -436,8 +438,11 @@ const canvas = document.getElementById('gameCanvas');
     }
 
     function handleMove(e) {
+// ★追加: 指が2本以上ある場合はブラウザのズーム動作を優先させるため、処理を中断
+        if (e.touches && e.touches.length > 1) return;
+
         if (!isDragging || !selectedPiece) return;
-        e.preventDefault();
+        e.preventDefault(); // ←1本指のときだけ、画面スクロールを止める
         const pos = getPos(e);
         selectedPiece.x = pos.x - dragOffset.x;
         selectedPiece.y = pos.y - dragOffset.y;
