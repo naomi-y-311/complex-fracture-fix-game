@@ -372,16 +372,21 @@ const canvas = document.getElementById('gameCanvas');
     function updateProgress() {
         if (!pieces || pieces.length === 0) return;
 
+        // 1. 骨とプレートをそれぞれリストとして取得
         const bones = pieces.filter(p => p.type === 'bone');
-        const plate = pieces.find(p => p.type === 'plate');
-        
-        if (!plate) return; // 安全策
+        const plates = pieces.filter(p => p.type === 'plate'); // ★修正: findではなくfilterですべて取得
 
-        const lockedCount = bones.filter(p => p.isLocked).length;
+        // 2. ロックされた数をカウント
+        const lockedBonesCount = bones.filter(p => p.isLocked).length;
+        const lockedPlatesCount = plates.filter(p => p.isLocked).length;
+
         const totalBones = bones.length;
-        
-        let ratio = lockedCount / totalBones;
-        if (plate.isLocked) ratio = 1.0;
+        const totalPlates = plates.length;
+        const totalPieces = totalBones + totalPlates;
+        const totalLocked = lockedBonesCount + lockedPlatesCount;
+
+        // 3. 進捗率（背景色の変化用）
+        const ratio = totalLocked / totalPieces;
 
         // 背景色変化
         const r = 255 - (31 * ratio);
@@ -393,11 +398,15 @@ const canvas = document.getElementById('gameCanvas');
         title.style.color = colorText;
         statusDiv.style.color = colorText;
 
-        if (lockedCount < totalBones) {
-            statusDiv.textContent = `骨を整復してください (${lockedCount}/${totalBones})`;
-        } else if (!plate.isLocked) {
-            statusDiv.textContent = "仕上げにプレートで固定してください！";
+        // 4. メッセージ判定
+        if (lockedBonesCount < totalBones) {
+            // まだ骨が終わっていない
+            statusDiv.textContent = `骨を整復してください (${lockedBonesCount}/${totalBones})`;
+        } else if (lockedPlatesCount < totalPlates) {
+            // 骨は終わったが、プレートが残っている（1枚でも残っていればここに来る）
+            statusDiv.textContent = `仕上げにプレートで固定してください！ (${lockedPlatesCount}/${totalPlates})`;
         } else if (!isCompleted) {
+            // 全て完了
             isCompleted = true;
             statusDiv.textContent = "手術成功！お大事にしてください！🎉";
             if(navigator.vibrate) navigator.vibrate([100,50,200]);
