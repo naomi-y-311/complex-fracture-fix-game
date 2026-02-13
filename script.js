@@ -13,65 +13,15 @@ const canvas = document.getElementById('gameCanvas');
     // --- ピース定義 ---
     const piecesDef = [
         {
-            name: "脛骨 (太い骨)",
-            type: 'bone',
-            targetX: 230, targetY: 200,
-            path: [-40, -150, 40, -150, 50, 120, 10, 150, -30, 130, -40, -150],
-            color: "#fff3e0",
-            zIndex: 1
-        },
-                {
-            name: "bone_1",
-            type: 'bone',
-            targetX: 230, targetY: 200,
-            pathData: "M133.541 0.780273C139 31.4544 169.597 112.938 136.834 135.277C125.9 142.733 108.786 156.408 83.5576 156.408C73.4748 156.408 59.5304 152.935 50.2734 158.315C42.6634 162.739 20.6579 174.854 13.5879 164.146C10.5237 159.504 11.7383 152.947 11.793 147.723C11.8934 138.102 5.06472 129.131 0.630859 121.017C17.5468 106.17 34.4314 91.2478 52.8877 78.3232C53.6574 77.7847 64.7129 72.3056 63.7246 69.5449C62.601 66.4089 49.4004 66.6008 47.2559 65.9111C59.3252 56.2131 72.3531 47.1022 85.6934 39.2461C88.4749 37.608 89.693 36.6962 90.1396 36.2793C91.8735 34.6589 87.2152 32.99 86.5498 32.6123C93.7306 25.1567 103.54 19.8115 112.181 14.2822C119.301 9.72612 126.188 4.90427 133.541 0.780273Z",
-            color: "#FF383C",
-            zIndex: 1
-        },
-        {
-            name: "腓骨上部 (細い骨・上)",
-            type: 'bone',
-            targetX: 150, targetY: 165,
-            path: [-15, -115, 15, -115, 18, 65, 5, 55, -5, 70, -15, -115],
-            color: "#ffe0b2",
-            zIndex: 1
-        },
-        {
-            name: "腓骨下部 (外くるぶし)",
-            type: 'bone',
-            targetX: 155, targetY: 300,
-            path: [ -5, -65, 5, -80, 18, -70, 20, 40, -10, 50, -25, -40, -5, -65],
-            color: "#ffccbc",
-            zIndex: 1
-        },
-        {
-            name: "距骨 (関節部)",
-            type: 'bone',
-            targetX: 200, targetY: 365,
-            path: [-45, -15, 45, -15, 55, 25, -35, 35, -45, -15],
-            color: "#ffe0b2",
-            zIndex: 1
-        },
-        {
-            name: "踵骨 (かかと)",
-            type: 'bone',
-            targetX: 205, targetY: 425,
-            path: [-40, -25, 50, -15, 70, 35, -20, 45, -60, 15, -40, -25],
-            color: "#ffccbc",
-            zIndex: 1
-        },
-        {
-            name: "固定用プレート",
-            type: 'plate',
-            targetX: 158, targetY: 235,
-            path: [-10, -70, 10, -70, 12, 80, -8, 80, -10, -70],
-            screws: [
-                {x: 0, y: -50, r: 3}, {x: 1, y: -20, r: 3}, 
-                {x: 1, y: 20, r: 3}, {x: 2, y: 50, r: 3}
-            ],
-            color: "#cfd8dc",
-            strokeColor: "#78909c",
-            zIndex: 2
+    name: "新しい骨",
+    type: 'bone',
+    // ▼ Figmaのサイドバーの数値をそのまま書く
+    targetX: 120, 
+    targetY: 250,
+    // ▼ Figmaからコピーした d="..." の中身
+    pathData: "M133.541 0.780273C139 31.4544 169.597 112.938 136.834 135.277C125.9 142.733 108.786 156.408 83.5576 156.408C73.4748 156.408 59.5304 152.935 50.2734 158.315C42.6634 162.739 20.6579 174.854 13.5879 164.146C10.5237 159.504 11.7383 152.947 11.793 147.723C11.8934 138.102 5.06472 129.131 0.630859 121.017C17.5468 106.17 34.4314 91.2478 52.8877 78.3232C53.6574 77.7847 64.7129 72.3056 63.7246 69.5449C62.601 66.4089 49.4004 66.6008 47.2559 65.9111C59.3252 56.2131 72.3531 47.1022 85.6934 39.2461C88.4749 37.608 89.693 36.6962 90.1396 36.2793C91.8735 34.6589 87.2152 32.99 86.5498 32.6123C93.7306 25.1567 103.54 19.8115 112.181 14.2822C119.301 9.72612 126.188 4.90427 133.541 0.780273Z", 
+    color: "#ffe0b2",
+    zIndex: 1
         }
     ];
 
@@ -153,13 +103,24 @@ const canvas = document.getElementById('gameCanvas');
             if (p.screws) {
                 p.screws.forEach(s => drawCircle(c, s.x, s.y, s.r));
             }
+            return null; // Path2Dオブジェクトではない
+        } else if (p.pathData) {
+            // ★追加: SVGデータ(pathData)がある場合の処理
+            // 毎回生成すると重いので、初回だけ生成してキャッシュする
+            if (!p.cachedPath) {
+                p.cachedPath = new Path2D(p.pathData);
+            }
+            return p.cachedPath; // Path2Dオブジェクトを返す
         } else {
+            // 従来の座標配列(path)の場合
             buildPath(c, p.path);
+            return null;
         }
     }
 
+/* drawPiecePath から返ってきたデータを使って、実際に色を塗る処理に変更 */
     function draw() {
-        if (!pieces || pieces.length === 0) return; // 安全策
+        if (!pieces || pieces.length === 0) return;
 
         ctx.clearRect(0, 0, baseWidth, baseHeight);
 
@@ -170,10 +131,18 @@ const canvas = document.getElementById('gameCanvas');
             if (!p.isLocked) {
                 ctx.save();
                 ctx.translate(p.targetX, p.targetY);
-                drawPiecePath(ctx, p);
+                
+                const path2d = drawPiecePath(ctx, p); // パスを取得
+                
                 ctx.strokeStyle = "#bdbdbd";
                 ctx.lineWidth = 2;
-                ctx.stroke();
+                
+                // ★修正: Path2Dならそれを描画、違えば現在のパスを描画
+                if (path2d) {
+                    ctx.stroke(path2d);
+                } else {
+                    ctx.stroke();
+                }
                 ctx.restore();
             }
         });
@@ -203,20 +172,29 @@ const canvas = document.getElementById('gameCanvas');
                 ctx.shadowOffsetY = 5;
             }
 
-            drawPiecePath(ctx, p);
+            const path2d = drawPiecePath(ctx, p); // パスを取得
 
             if (p.type === 'plate') {
                 ctx.fillStyle = p.isLocked ? "#b0bec5" : p.color;
                 ctx.strokeStyle = p.strokeColor;
+                ctx.lineWidth = 2;
+                // プレートは従来通り
                 ctx.fill("evenodd");
+                ctx.stroke();
             } else {
                 ctx.fillStyle = p.isLocked ? "#e0f7fa" : p.color;
                 ctx.strokeStyle = "#5d4037";
-                ctx.fill();
+                ctx.lineWidth = 2;
+
+                // ★修正: Path2Dと従来方式で塗り方を分ける
+                if (path2d) {
+                    ctx.fill(path2d);
+                    ctx.stroke(path2d);
+                } else {
+                    ctx.fill();
+                    ctx.stroke();
+                }
             }
-            
-            ctx.lineWidth = 2;
-            ctx.stroke();
             ctx.restore();
         });
 
@@ -269,11 +247,23 @@ const canvas = document.getElementById('gameCanvas');
         };
     }
 
+/* マウスが骨の上に乗ったかどうかの判定ロジックを、SVG対応版に変更 */
     function isInside(pos, p) {
         ctx.save();
         ctx.translate(p.x, p.y);
-        drawPiecePath(ctx, p);
-        const hit = ctx.isPointInPath(pos.x, pos.y);
+        
+        const path2d = drawPiecePath(ctx, p);
+        let hit = false;
+
+        // ★修正: Path2Dがあるならそれを使って判定
+        if (path2d) {
+            // isPointInPath(path, x, y) は translate の影響を正しく受け取ります
+            hit = ctx.isPointInPath(path2d, pos.x, pos.y);
+        } else {
+            // 従来方式（drawPiecePath内でパスが作られている）
+            hit = ctx.isPointInPath(pos.x, pos.y);
+        }
+        
         ctx.restore();
         return hit;
     }
