@@ -371,9 +371,15 @@ const canvas = document.getElementById('gameCanvas');
         const rect = canvas.getBoundingClientRect();
         const cx = e.touches ? e.touches[0].clientX : e.clientX;
         const cy = e.touches ? e.touches[0].clientY : e.clientY;
+        
+        // ★修正: キャンバスの「実際の画素数」と「画面上の見た目のサイズ」の比率で計算する
+        // これにより、画面が拡大されていても正確な位置が取れます
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+
         return {
-            x: (cx - rect.left) / scale,
-            y: (cy - rect.top) / scale
+            x: (cx - rect.left) * scaleX,
+            y: (cy - rect.top) * scaleY
         };
     }
 
