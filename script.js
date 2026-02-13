@@ -369,14 +369,12 @@ const canvas = document.getElementById('gameCanvas');
         updateProgress();
     }
 
-    function updateProgress() {
+function updateProgress() {
         if (!pieces || pieces.length === 0) return;
 
-        // 1. 骨とプレートをそれぞれリストとして取得
         const bones = pieces.filter(p => p.type === 'bone');
-        const plates = pieces.filter(p => p.type === 'plate'); // ★修正: findではなくfilterですべて取得
+        const plates = pieces.filter(p => p.type === 'plate');
 
-        // 2. ロックされた数をカウント
         const lockedBonesCount = bones.filter(p => p.isLocked).length;
         const lockedPlatesCount = plates.filter(p => p.isLocked).length;
 
@@ -385,8 +383,7 @@ const canvas = document.getElementById('gameCanvas');
         const totalPieces = totalBones + totalPlates;
         const totalLocked = lockedBonesCount + lockedPlatesCount;
 
-        // 3. 進捗率（背景色の変化用）
-        const ratio = totalLocked / totalPieces;
+        let ratio = totalLocked / totalPieces;
 
         // 背景色変化
         const r = 255 - (31 * ratio);
@@ -397,19 +394,55 @@ const canvas = document.getElementById('gameCanvas');
         const colorText = ratio > 0.8 ? "#006064" : "#b71c1c";
         title.style.color = colorText;
         statusDiv.style.color = colorText;
+        
+        // ★追加: テキストのアニメーション用スタイルをリセット
+        statusDiv.style.transform = "scale(1)";
+        statusDiv.style.transition = "transform 0.3s ease";
 
-        // 4. メッセージ判定
         if (lockedBonesCount < totalBones) {
-            // まだ骨が終わっていない
             statusDiv.textContent = `骨を整復してください (${lockedBonesCount}/${totalBones})`;
         } else if (lockedPlatesCount < totalPlates) {
-            // 骨は終わったが、プレートが残っている（1枚でも残っていればここに来る）
             statusDiv.textContent = `仕上げにプレートで固定してください！ (${lockedPlatesCount}/${totalPlates})`;
         } else if (!isCompleted) {
-            // 全て完了
+            // --- ▼ ここからが演出追加部分 ▼ ---
             isCompleted = true;
-            statusDiv.textContent = "手術成功！お大事にしてください！🎉";
-            if(navigator.vibrate) navigator.vibrate([100,50,200]);
+            
+            // 1. テキスト変更
+            statusDiv.textContent = "手術大成功！🎉 リハビリ頑張ってください！";
+            
+            // 2. テキストをボヨヨンと大きくする
+            statusDiv.style.transform = "scale(1.3)";
+            statusDiv.style.fontWeight = "900";
+
+            // 3. スマホの振動
+            if(navigator.vibrate) navigator.vibrate([100,50,100,50,200]);
+
+            // 4. 紙吹雪発射！（左右からドーン！）
+            const duration = 1500; // 1.5秒間
+            const end = Date.now() + duration;
+
+            (function frame() {
+                // 左右からランダムに発射
+                confetti({
+                    particleCount: 5,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: ['#ff0000', '#00ff00', '#0000ff', '#ffff00'] // カラフルに
+                });
+                confetti({
+                    particleCount: 5,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: ['#ff0000', '#00ff00', '#0000ff', '#ffff00']
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
+            // --- ▲ ここまで ▲ ---
         }
     }
 
