@@ -397,7 +397,7 @@ const canvas = document.getElementById('gameCanvas');
             
             // 2. もし内側でなければ、「線の太さを太くして」境界線上も判定に含める
             if (!hit) {
-                ctx.lineWidth = 40; // ★ここが重要：判定エリアを40px分広げる（見えない手袋をつけるイメージ）
+                ctx.lineWidth = 20; // 判定エリアを20px分広げる（見えない手袋をつけるイメージ）
                 hit = ctx.isPointInStroke(path2d, pos.x, pos.y);
             }
         } else {
