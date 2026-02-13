@@ -32,7 +32,9 @@ body {
         justify-content: center;
         align-items: center;
     }
-canvas {
+
+/* IDを指定して、ゲーム画面だけに適用する */
+#gameCanvas {
     display: block;
     box-shadow: 0 10px 25px rgba(0,0,0,0.2);
     border-radius: 12px;
