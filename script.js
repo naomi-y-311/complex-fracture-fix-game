@@ -331,13 +331,26 @@ const canvas = document.getElementById('gameCanvas');
         const path2d = drawPiecePath(ctx, p);
         let hit = false;
 
-        // ★修正: Path2Dがあるならそれを使って判定
         if (path2d) {
-            // isPointInPath(path, x, y) は translate の影響を正しく受け取ります
+            // 1. 形の内側かどうかを判定
             hit = ctx.isPointInPath(path2d, pos.x, pos.y);
+            
+            // 2. もし内側でなければ、「線の太さを太くして」境界線上も判定に含める
+            if (!hit) {
+                ctx.lineWidth = 40; // ★ここが重要：判定エリアを40px分広げる（見えない手袋をつけるイメージ）
+                hit = ctx.isPointInStroke(path2d, pos.x, pos.y);
+            }
         } else {
-            // 従来方式（drawPiecePath内でパスが作られている）
+            // 従来方式（四角形など）の場合
             hit = ctx.isPointInPath(pos.x, pos.y);
+            
+            // 従来方式でも少し判定を甘くする場合
+            if (!hit) {
+                 // 簡易的に距離で判定（中心付近ならOKとする救済措置）
+                 // ※必要なければここは削除してもOK
+                 const dist = Math.sqrt(pos.x*pos.x + pos.y*pos.y);
+                 if (dist < 30) hit = true;
+            }
         }
         
         ctx.restore();
