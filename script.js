@@ -239,30 +239,20 @@ const canvas = document.getElementById('gameCanvas');
     }
 
     // --- 描画ロジック ---
-function drawPiecePath(c, p) {
-        // ★修正点: まず「SVGデータ(pathData)」を持っているかを最優先でチェックする
+// --- 描画ロジック ---
+    function drawPiecePath(c, p) {
+        // SVGデータ(pathData)がある場合（新しい骨やプレート）
         if (p.pathData) {
-            // SVGデータがある場合（新しい骨やプレート）
             if (!p.cachedPath) {
                 p.cachedPath = new Path2D(p.pathData);
             }
-            
-            // もしプレートで、かつ「ネジ(screws)」のデータも持っているなら描画する
-            // (SVGに穴が開いているデザインなら、このif文は無視されます)
-            if (p.type === 'plate' && p.screws) {
-                 // 注意: Path2Dを使う場合、この関数内で直接描画すると順序が難しいですが、
-                 // 今回追加されたプレートにはscrewsがないので影響ありません。
-            }
-            
-            return p.cachedPath; // Path2Dオブジェクトを返す
+            // SVGデータがある場合は Path2Dオブジェクトを返すだけにする
+            return p.cachedPath; 
         } 
         
         // --- 以下、古いデータ形式（座標配列 path）の場合 ---
-
         if (p.type === 'plate') {
-            // 古いタイプのプレート（path配列がある場合）
             c.beginPath();
-            // ★安全策: pathが存在するか確認してから length を読む
             if (p.path && p.path.length >= 2) {
                 c.moveTo(p.path[0], p.path[1]);
                 for(let i=2; i<p.path.length; i+=2) c.lineTo(p.path[i], p.path[i+1]);
@@ -272,7 +262,7 @@ function drawPiecePath(c, p) {
             if (p.screws) {
                 p.screws.forEach(s => drawCircle(c, s.x, s.y, s.r));
             }
-            return null;
+            return null; // Path2Dではない
         } else {
             // 古いタイプの骨
             if (p.path) {
@@ -283,7 +273,7 @@ function drawPiecePath(c, p) {
     }
 
 /* drawPiecePath から返ってきたデータを使って、実際に色を塗る処理に変更 */
-    function draw() {
+function draw() {
         if (!pieces || pieces.length === 0) return;
 
         ctx.clearRect(0, 0, baseWidth, baseHeight);
@@ -296,12 +286,11 @@ function drawPiecePath(c, p) {
                 ctx.save();
                 ctx.translate(p.targetX, p.targetY);
                 
-                const path2d = drawPiecePath(ctx, p); // パスを取得
+                const path2d = drawPiecePath(ctx, p);
                 
                 ctx.strokeStyle = "#bdbdbd";
                 ctx.lineWidth = 1;
                 
-                // ★修正: Path2Dならそれを描画、違えば現在のパスを描画
                 if (path2d) {
                     ctx.stroke(path2d);
                 } else {
@@ -338,19 +327,27 @@ function drawPiecePath(c, p) {
 
             const path2d = drawPiecePath(ctx, p); // パスを取得
 
+            // ▼▼▼ ここからが修正箇所です ▼▼▼
             if (p.type === 'plate') {
                 ctx.fillStyle = p.isLocked ? "#b0bec5" : p.color;
-                ctx.strokeStyle = p.strokeColor;
+                ctx.strokeStyle = p.strokeColor || "#78909c"; // strokeColorがない場合のフォールバック
                 ctx.lineWidth = 1;
-                // プレートは従来通り
-                ctx.fill("evenodd");
-                ctx.stroke();
+
+                if (path2d) {
+                    // SVGデータのプレートの場合
+                    ctx.fill(path2d, "evenodd"); // 穴あきに対応するために "evenodd" を指定
+                    ctx.stroke(path2d);
+                } else {
+                    // 古いデータのプレートの場合
+                    ctx.fill("evenodd");
+                    ctx.stroke();
+                }
             } else {
+                // 骨の場合
                 ctx.fillStyle = p.isLocked ? "#ffe0b2" : p.color;
                 ctx.strokeStyle = "#5d4037";
                 ctx.lineWidth = 1;
 
-                // ★修正: Path2Dと従来方式で塗り方を分ける
                 if (path2d) {
                     ctx.fill(path2d);
                     ctx.stroke(path2d);
@@ -359,6 +356,8 @@ function drawPiecePath(c, p) {
                     ctx.stroke();
                 }
             }
+            // ▲▲▲ ここまでが修正箇所です ▲▲▲
+
             ctx.restore();
         });
 
