@@ -23,6 +23,17 @@ body {
         text-align: center;
         z-index: 10;
     }
+    #description {
+        font-size: 0.9rem;
+        color: #565656;
+        pointer-events: none;
+        position: absolute;
+        top: 40px;
+        width: 100%;
+        text-align: center;
+        z-index: 10;
+        }
+
     #game-container {
         position: relative;
         width: 100%;
