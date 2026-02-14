@@ -27,10 +27,13 @@ body {
     /* margin-top は削除 */
 }
 
-/* 3. タイトル（キャンバスの上に重ねる設定） */
-#title {
+#title-container {
     position: absolute;  /* 浮カせる */
     top: 10px;           /* 上からの位置 */
+}
+
+/* 3. タイトル（キャンバスの上に重ねる設定） */
+#title {
     left: 0;
     width: 100%;
     text-align: center;
@@ -45,8 +48,6 @@ body {
 
 /* 4. 説明文（キャンバスの上に重ねる設定） */
 #description {
-    position: absolute;  /* 浮カせる */
-    top: 40px;           /* タイトルの少し下 */
     left: 0;
     width: 100%;
     padding: 0 20px;     /* 横幅に少し余裕を */
@@ -59,7 +60,6 @@ body {
     font-size: 0.8rem;
     line-height: 1.4;
     color: #5d4037;
-    text-shadow: 1px 1px 0 rgba(255,255,255,0.8);
 }
 
 /* IDを指定して、ゲーム画面だけに適用する */
