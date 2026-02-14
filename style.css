@@ -19,14 +19,6 @@ body {
     touch-action: manipulation;
 }
 
-/* 2. ゲームコンテナ（ここを基準に文字を重ねる） */
-#game-container {
-    position: relative; /* 子要素のabsoluteの基準点にする */
-    width: auto;
-    height: auto;
-    /* margin-top は削除 */
-}
-
 #title-container {
     position: absolute;  /* 浮カせる */
     top: 10px;           /* 上からの位置 */
