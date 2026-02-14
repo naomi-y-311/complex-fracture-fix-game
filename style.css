@@ -15,14 +15,14 @@ body {
 /* ▼ 新しく追加：文字全体をまとめる箱 */
 　　　#ui-container {
         position: absolute;
-        top: 20px;          /* 上からの位置 */
+        top: 10px;          /* 上からの位置 */
         width: 100%;
         text-align: center;
         z-index: 10;        /* キャンバスより手前 */
         pointer-events: none; /* これがないと、文字の隙間で骨が掴めなくなります！ */
 　　　　}
     h1 {
-        font-size: 1.2rem;  /* スマホに合わせて少し小さくしてもいいかも */
+        font-size: 1rem;  /* スマホに合わせて少し小さくしてもいいかも */
         color: #b71c1c;
         margin: 0 0 10px 0; /* 下に隙間(10px)を作る */
         text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
@@ -30,6 +30,7 @@ body {
         width: 90%;         /* 画面幅の90%に収める */
         margin-left: auto;  /* 中央寄せ */
         margin-right: auto; /* 中央寄せ */
+        text-align:center;
         line-height: 1.4;   /* 行間を少し広げる */
         }
     }
