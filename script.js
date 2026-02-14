@@ -453,14 +453,14 @@ function updateProgress() {
                     angle: 60,
                     spread: 55,
                     origin: { x: 0, y: 0.8 },
-                    colors: ['#D4AF37', '#C0C0C0', '#B87333', '#F5F5F5']
+                    colors: ['#F06292', '#BA68C8', '#4FC3F7', '#FF8A65']
                 });
                 confetti({
                     particleCount: 5,
                     angle: 120,
                     spread: 55,
                     origin: { x: 1, y: 0.8 },
-                    colors: ['#D4AF37', '#C0C0C0', '#B87333', '#F5F5F5']
+                    colors: ['#F06292', '#BA68C8', '#4FC3F7', '#FF8A65']
                 });
 
                 if (Date.now() < end) {
