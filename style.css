@@ -1,76 +1,47 @@
-/* 1. 全体の配置（スマホの上の余白対策） */
 body {
-    margin: 0;
-    overflow: hidden;
-    background-color: #ffcdd2; /* 初期：赤（腫れ） */
-    font-family: "Helvetica Neue", Arial, sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    
-    /* ▼ 修正: justify-content: center; を削除または flex-start に変更 */
-    /* これで「無理やり上下中央」にならず、上詰めで表示されます */
-    justify-content: flex-start; 
-    
-    /* 上に少しだけ隙間を開けたい場合は padding-top を使う */
-    padding-top: 20px; 
-    
-    height: 100vh;
-    touch-action: manipulation;
-}
-
-#title-container {
-    position: absolute;  /* 浮カせる */
-    top: 10px;           /* 上からの位置 */
-}
-
-/* 3. タイトル（キャンバスの上に重ねる設定） */
-#title {
-    left: 0;
-    width: 100%;
-    text-align: center;
-    z-index: 10;         /* キャンバスより手前に */
-    pointer-events: none; /* ★重要: これがないと文字の下の骨が掴めません！ */
-    
-    margin: 0;           /* デフォルトの余白を消す */
-    font-size: 1.1rem;
-    color: #b71c1c;
-    text-shadow: 2px 2px 0 rgba(255,255,255,0.8); /* 文字が見やすいように縁取り */
-}
-
-/* 4. 説明文（キャンバスの上に重ねる設定） */
-#description {
-    left: 0;
-    width: 100%;
-    padding: 0 20px;     /* 横幅に少し余裕を */
-    box-sizing: border-box;
-    text-align: center;
-    z-index: 10;
-    pointer-events: none; /* ★重要: クリック透過 */
-    
-    margin: 0;           /* デフォルトの余白を消す */
-    font-size: 0.8rem;
-    line-height: 1.4;
-    color: #5d4037;
-}
-
-/* IDを指定して、ゲーム画面だけに適用する */
-#gameCanvas {
-    display: block;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    border-radius: 12px;
-    
-    /* ▼ 修正後のコード ▼ */
-    background-color: rgba(255, 255, 255, 0.9); 
-    background-image: url('background.svg');
-    
-    /* 画像のサイズと位置の設定 */
-    background-size: contain;   /* キャンバス内に全体が収まるように調整 */
-    background-position: center; /* 中央に配置 */
-    background-repeat: no-repeat; /* 繰り返しなし */
-    
-    cursor: grab;
-}
+        margin: 0;
+        overflow: hidden;
+        background-color: #ffcdd2; /* 初期：赤（腫れ） */
+        font-family: "Helvetica Neue", Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        user-select: none;
+        -webkit-user-select: none;
+    }
+    h1 {
+        font-size: 1.2rem;
+        color: #b71c1c;
+        margin-bottom: 10px;
+        pointer-events: none;
+        text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
+        position: absolute;
+        top: 20px;
+        width: 100%;
+        text-align: center;
+        z-index: 10;
+    }
+    #game-container {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    #gameCanvas {
+        display: block;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        border-radius: 12px;
+        background-color: rgba(255, 255, 255, 0.9);
+        background-image: url('background.svg');
+        /* 画像のサイズと位置の設定 */
+        background-size: contain;   /* キャンバス内に全体が収まるように調整 */
+        background-position: center; /* 中央に配置 */
+        background-repeat: no-repeat; /* 繰り返しなし */
+        cursor: grab;
     }
     canvas:active {
         cursor: grabbing;
