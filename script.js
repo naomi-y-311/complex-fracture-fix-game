@@ -229,11 +229,20 @@ const canvas = document.getElementById('gameCanvas');
         const winH = window.innerHeight * 0.8;
         scale = Math.min(winW / baseWidth, winH / baseHeight);
         
-        canvas.width = baseWidth * scale;
-        canvas.height = baseHeight * scale;
+        // ★追加: デバイスの画素密度（DPR）を取得（iPhoneなら2や3になります）
+        const dpr = window.devicePixelRatio || 1;
+
+        // ★変更: 内部の解像度をDPR倍にして高精細にする
+        canvas.width = baseWidth * scale * dpr;
+        canvas.height = baseHeight * scale * dpr;
+
+        // ★追加: でも、画面上の見た目のサイズは大きくならないようにCSSで押さえる
+        canvas.style.width = `${baseWidth * scale}px`;
+        canvas.style.height = `${baseHeight * scale}px`;
         
+        // ★変更: 描画の基準もDPR倍に拡大する
         ctx.setTransform(1, 0, 0, 1, 0, 0);
-        ctx.scale(scale, scale);
+        ctx.scale(scale * dpr, scale * dpr);
         
         draw();
     }
@@ -369,7 +378,7 @@ const canvas = document.getElementById('gameCanvas');
         updateProgress();
     }
 
-function updateProgress() {
+    function updateProgress() {
         if (!pieces || pieces.length === 0) return;
 
         const bones = pieces.filter(p => p.type === 'bone');
@@ -451,15 +460,12 @@ function updateProgress() {
         const rect = canvas.getBoundingClientRect();
         const cx = e.touches ? e.touches[0].clientX : e.clientX;
         const cy = e.touches ? e.touches[0].clientY : e.clientY;
-        
-        // ★修正: キャンバスの「実際の画素数」と「画面上の見た目のサイズ」の比率で計算する
-        // これにより、画面が拡大されていても正確な位置が取れます
-        const scaleX = canvas.width / rect.width;
-        const scaleY = canvas.height / rect.height;
 
+        // ★修正: 「実際のキャンバス幅(400)」と「画面上の表示幅(rect.width)」の比率を使う
+        // これにより、DPRに関係なく、常に正しいゲーム内座標(0〜400)が取得できます
         return {
-            x: (cx - rect.left) * scaleX,
-            y: (cy - rect.top) * scaleY
+            x: (cx - rect.left) * (baseWidth / rect.width),
+            y: (cy - rect.top) * (baseHeight / rect.height)
         };
     }
 
