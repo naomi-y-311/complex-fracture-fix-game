@@ -436,7 +436,7 @@ function updateProgress() {
             statusDiv.style.backgroundColor = "rgba(255, 255, 255, 0.9)"; // 背景を白く
             statusDiv.style.padding = "20px";
             statusDiv.style.borderRadius = "15px";
-            statusDiv.style.boxShadow = "0 10px 10px rgba(0,0,0,0.3)";
+            statusDiv.style.boxShadow = "0 10px 10px rgba(0,0,0,0.2)";
             statusDiv.style.zIndex = "100"; // 最前面へ
             statusDiv.style.transition = "all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)"; // ボヨヨンというアニメーション
 
