@@ -469,9 +469,16 @@ const canvas = document.getElementById('gameCanvas');
         };
     }
 
-/* マウスが骨の上に乗ったかどうかの判定ロジックを、SVG対応版に変更 */
+/* マウスが骨の上に乗ったかどうかの判定ロジックを、高画質＆SVG対応版に変更 */
     function isInside(pos, p) {
         ctx.save();
+        
+        // ★ここが修正ポイント！
+        // 当たり判定の時だけは、高画質化や画面拡大の設定（scale/dpr）を
+        // 一旦リセットして、「純粋な400x600の座標系」として計算させます。
+        ctx.setTransform(1, 0, 0, 1, 0, 0); 
+        
+        // ピースの位置へ移動
         ctx.translate(p.x, p.y);
         
         const path2d = drawPiecePath(ctx, p);
@@ -481,25 +488,22 @@ const canvas = document.getElementById('gameCanvas');
             // 1. 形の内側かどうかを判定
             hit = ctx.isPointInPath(path2d, pos.x, pos.y);
             
-            // 2. もし内側でなければ、「線の太さを太くして」境界線上も判定に含める
+            // 2. もし内側でなければ、線の太さを太くして判定
             if (!hit) {
-                ctx.lineWidth = 20; // 判定エリアを20px分広げる（見えない手袋をつけるイメージ）
+                ctx.lineWidth = 20; 
                 hit = ctx.isPointInStroke(path2d, pos.x, pos.y);
             }
         } else {
-            // 従来方式（四角形など）の場合
+            // 従来方式
             hit = ctx.isPointInPath(pos.x, pos.y);
             
-            // 従来方式でも少し判定を甘くする場合
             if (!hit) {
-                 // 簡易的に距離で判定（中心付近ならOKとする救済措置）
-                 // ※必要なければここは削除してもOK
                  const dist = Math.sqrt(pos.x*pos.x + pos.y*pos.y);
                  if (dist < 30) hit = true;
             }
         }
         
-        ctx.restore();
+        ctx.restore(); // リセットした設定を元に戻す（描画用に戻す）
         return hit;
     }
 
