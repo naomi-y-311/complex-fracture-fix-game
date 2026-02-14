@@ -33,7 +33,7 @@ body {
     }
     #gameCanvas {
         position:absolute;
-        maring:auto;
+        margin:auto;
         inset:0;
         display: block;
         box-shadow: 0 10px 25px rgba(0,0,0,0.2);
