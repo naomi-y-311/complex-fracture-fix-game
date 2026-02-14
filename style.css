@@ -18,7 +18,7 @@ body {
         pointer-events: none;
         text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
         position: absolute;
-        top: calc(10px + env(safe-area-inset-bottom));
+        top: calc(5px + env(safe-area-inset-bottom));
         width: 100%;
         text-align: center;
         z-index: 10;
@@ -64,7 +64,7 @@ body {
         position: absolute;
         /* ▼ 修正: 固定の20pxに、iPhoneのホームバーの高さ(env)を足し算する */
         /* これで「バーのさらに上」に配置されます */
-        bottom: calc(20px + env(safe-area-inset-bottom));
+        bottom: calc(15px + env(safe-area-inset-bottom));
         width: 100%;
         font-weight: bold;
         color: #c62828;
