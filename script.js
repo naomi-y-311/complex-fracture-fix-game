@@ -378,7 +378,7 @@ const canvas = document.getElementById('gameCanvas');
         updateProgress();
     }
 
-    function updateProgress() {
+function updateProgress() {
         if (!pieces || pieces.length === 0) return;
 
         const bones = pieces.filter(p => p.type === 'bone');
@@ -404,40 +404,56 @@ const canvas = document.getElementById('gameCanvas');
         title.style.color = colorText;
         statusDiv.style.color = colorText;
         
-        // ★追加: テキストのアニメーション用スタイルをリセット
-        statusDiv.style.transform = "scale(1)";
-        statusDiv.style.transition = "transform 0.3s ease";
+        // ★リセット: 通常時は元の位置に戻す
+        statusDiv.style.position = "absolute";
+        statusDiv.style.bottom = "calc(30px + env(safe-area-inset-bottom))";
+        statusDiv.style.top = "auto";
+        statusDiv.style.left = "0";
+        statusDiv.style.transform = "none";
+        statusDiv.style.width = "100%";
+        statusDiv.style.backgroundColor = "transparent";
+        statusDiv.style.padding = "0";
+        statusDiv.style.borderRadius = "0";
+        statusDiv.style.boxShadow = "none";
+        statusDiv.style.fontSize = "1rem";
 
         if (lockedBonesCount < totalBones) {
             statusDiv.textContent = `小さな骨片も忘れずに！ (${lockedBonesCount}/${totalBones})`;
         } else if (lockedPlatesCount < totalPlates) {
             statusDiv.textContent = `仕上げにプレートで固定しましょう (${lockedPlatesCount}/${totalPlates})`;
         } else if (!isCompleted) {
-            // --- ▼ ここからが演出追加部分 ▼ ---
+            // --- ▼ 成功時の演出（中央表示に変更） ▼ ---
             isCompleted = true;
             
-            // 1. テキスト変更
             statusDiv.textContent = "手術成功！🎉 リハビリ頑張って！";
             
-            // 2. テキストをボヨヨンと大きくする
-            statusDiv.style.transform = "scale(1.3)";
-            statusDiv.style.fontWeight = "900";
+            // ★CSSを動的に変更して中央に配置
+            statusDiv.style.bottom = "auto";
+            statusDiv.style.top = "50%";
+            statusDiv.style.left = "50%";
+            statusDiv.style.transform = "translate(-50%, -50%) scale(1.5)"; // 中央配置 + 拡大
+            statusDiv.style.width = "80%"; // 幅を制限
+            statusDiv.style.backgroundColor = "rgba(255, 255, 255, 0.9)"; // 背景を白く
+            statusDiv.style.padding = "20px";
+            statusDiv.style.borderRadius = "15px";
+            statusDiv.style.boxShadow = "0 10px 25px rgba(0,0,0,0.3)";
+            statusDiv.style.zIndex = "100"; // 最前面へ
+            statusDiv.style.transition = "all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)"; // ボヨヨンというアニメーション
 
-            // 3. スマホの振動
+            // スマホの振動
             if(navigator.vibrate) navigator.vibrate([100,50,100,50,200]);
 
-            // 4. 紙吹雪発射！（左右からドーン！）
-            const duration = 1500; // 1.5秒間
+            // 紙吹雪発射
+            const duration = 1500;
             const end = Date.now() + duration;
 
             (function frame() {
-                // 左右からランダムに発射
                 confetti({
                     particleCount: 5,
                     angle: 60,
                     spread: 55,
                     origin: { x: 0 },
-                    colors: ['#ff0000', '#00ff00', '#0000ff', '#ffff00'] // カラフルに
+                    colors: ['#ff0000', '#00ff00', '#0000ff', '#ffff00']
                 });
                 confetti({
                     particleCount: 5,
@@ -451,10 +467,8 @@ const canvas = document.getElementById('gameCanvas');
                     requestAnimationFrame(frame);
                 }
             }());
-            // --- ▲ ここまで ▲ ---
         }
     }
-
     // --- 入力イベント ---
     function getPos(e) {
         const rect = canvas.getBoundingClientRect();
