@@ -400,15 +400,15 @@ function updateProgress() {
         statusDiv.style.transition = "transform 0.3s ease";
 
         if (lockedBonesCount < totalBones) {
-            statusDiv.textContent = `骨を整復してください (${lockedBonesCount}/${totalBones})`;
+            statusDiv.textContent = `小さな骨片も忘れずに！ (${lockedBonesCount}/${totalBones})`;
         } else if (lockedPlatesCount < totalPlates) {
-            statusDiv.textContent = `仕上げにプレートで固定してください！ (${lockedPlatesCount}/${totalPlates})`;
+            statusDiv.textContent = `仕上げにプレートで固定しましょう (${lockedPlatesCount}/${totalPlates})`;
         } else if (!isCompleted) {
             // --- ▼ ここからが演出追加部分 ▼ ---
             isCompleted = true;
             
             // 1. テキスト変更
-            statusDiv.textContent = "手術大成功！🎉 リハビリ頑張って！";
+            statusDiv.textContent = "手術成功！🎉 リハビリ頑張って！";
             
             // 2. テキストをボヨヨンと大きくする
             statusDiv.style.transform = "scale(1.3)";
