@@ -7,7 +7,7 @@ body {
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        height: 100vh;
+        height: 100dvh;
         user-select: none;
         -webkit-user-select: none;
     }
@@ -51,7 +51,9 @@ body {
     }
     #status {
         position: absolute;
-        bottom: 30px;
+        /* ▼ 修正: 固定の30pxに、iPhoneのホームバーの高さ(env)を足し算する */
+        /* これで「バーのさらに上」に配置されます */
+        bottom: calc(30px + env(safe-area-inset-bottom));
         width: 100%;
         font-weight: bold;
         color: #c62828;
