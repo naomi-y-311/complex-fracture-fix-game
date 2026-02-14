@@ -12,17 +12,26 @@ body {
         user-select: none;
         -webkit-user-select: none;
     }
-    h1 {
-        font-size: 1.2rem;
-        color: #b71c1c;
-        margin-bottom: 10px;
-        pointer-events: none;
-        text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
+/* ▼ 新しく追加：文字全体をまとめる箱 */
+　　　#ui-container {
         position: absolute;
-        top: 20px;
+        top: 20px;          /* 上からの位置 */
         width: 100%;
         text-align: center;
-        z-index: 10;
+        z-index: 10;        /* キャンバスより手前 */
+        pointer-events: none; /* これがないと、文字の隙間で骨が掴めなくなります！ */
+　　　　}
+    h1 {
+        font-size: 1.2rem;  /* スマホに合わせて少し小さくしてもいいかも */
+        color: #b71c1c;
+        margin: 0 0 10px 0; /* 下に隙間(10px)を作る */
+        text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
+        /* ▼ 長いタイトルが画面幅からはみ出ないようにする魔法 */
+        width: 90%;         /* 画面幅の90%に収める */
+        margin-left: auto;  /* 中央寄せ */
+        margin-right: auto; /* 中央寄せ */
+        line-height: 1.4;   /* 行間を少し広げる */
+        }
     }
     #game-container {
         position: relative;
@@ -34,15 +43,14 @@ body {
     }
 
 #description {
-    position: absolute; /* タイトルと同じく浮かせます */
-    top: 55px;          /* タイトル(20px)の少し下 */
-    width: 100%;
-    text-align: center; /* 真ん中寄せ */
-    font-size: 0.6rem;  /* タイトルより少し小さく */
-    color: #565656;     /* タイトルと同じ赤色 */
-    pointer-events: none; /* クリックを邪魔しないように */
-    z-index: 10;        /* 骨より手前に表示 */
-    margin: 0;          /* 余計な余白を消す */
+    font-size: 0.8rem;  /* 少し小さめに調整 */
+    color: #565656;        /* 読みやすい色に */
+    margin: 0;
+    /* ▼ 説明文も画面からはみ出ないように */
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.4;
 }
 
 /* IDを指定して、ゲーム画面だけに適用する */
