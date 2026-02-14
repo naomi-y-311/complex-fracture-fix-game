@@ -32,6 +32,9 @@ body {
         align-items: center;
     }
     #gameCanvas {
+        position:absolute;
+        maring:auto;
+        inset:0;
         display: block;
         box-shadow: 0 10px 25px rgba(0,0,0,0.2);
         border-radius: 12px;
