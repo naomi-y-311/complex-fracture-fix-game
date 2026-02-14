@@ -33,6 +33,18 @@ body {
         align-items: center;
     }
 
+#description {
+    position: absolute; /* タイトルと同じく浮かせます */
+    top: 55px;          /* タイトル(20px)の少し下 */
+    width: 100%;
+    text-align: center; /* 真ん中寄せ */
+    font-size: 0.6rem;  /* タイトルより少し小さく */
+    color: #565656;     /* タイトルと同じ赤色 */
+    pointer-events: none; /* クリックを邪魔しないように */
+    z-index: 10;        /* 骨より手前に表示 */
+    margin: 0;          /* 余計な余白を消す */
+}
+
 /* IDを指定して、ゲーム画面だけに適用する */
 #gameCanvas {
     display: block;
